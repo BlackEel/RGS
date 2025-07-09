@@ -46,6 +46,33 @@ namespace RGS {
 
 	}
 
+	void WindowsWindow::KeyPressImpl(WindowsWindow* window, const WPARAM wParam, const char state)
+	{
+		if (wParam >= '0' && wParam <= '9')
+		{
+			window->m_Keys[wParam] = state;
+			return;
+		}
+
+		if (wParam >= 'A' && wParam <= 'Z')
+		{
+			window->m_Keys[wParam] = state;
+			return;
+		}
+
+		switch (wParam)
+		{
+		case VK_SPACE:
+			window->m_Keys[RGS_KEY_SPACE] = state;
+			break;
+		case VK_SHIFT:
+			window->m_Keys[RGS_KEY_LEFT_SHIFT] = state;
+			break;
+		default:
+			break;
+		}
+	}
+
 	LRESULT CALLBACK WindowsWindow::WndProc(const HWND hWnd, const UINT msgID, const WPARAM wParam, const LPARAM lParam)
 	{
 		WindowsWindow* window = (WindowsWindow*)GetProp(hWnd, RGS_WINDOW_ENTRY_NAME);
@@ -59,8 +86,23 @@ namespace RGS {
 		case WM_DESTROY:
 			window->m_Closed = true;
 			return 0;
+		case WM_KEYDOWN:
+			KeyPressImpl(window, wParam, RGS_PRESS);
+			return 0;
+		case WM_KEYUP:
+			KeyPressImpl(window, wParam, RGS_RELEASE);
 		}
 		return DefWindowProc(hWnd, msgID, wParam, lParam);
+	}
+
+	void WindowsWindow::PollInputEvents()
+	{
+		MSG message;
+		while (PeekMessage(&message, NULL, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&message);
+			DispatchMessage(&message);
+		}
 	}
 
 	void WindowsWindow::Show() const
@@ -124,5 +166,35 @@ namespace RGS {
 		RemoveProp(m_Handle, RGS_WINDOW_ENTRY_NAME);
 		DeleteDC(m_MemoryDC);
 		DestroyWindow(m_Handle);
+	}
+
+	void WindowsWindow::DrawFramebuffer(const Framebuffer& framebuffer)
+	{
+		const int fWidth = framebuffer.GetWidth();
+		const int fHeight = framebuffer.GetHeight();
+		const int width = m_Width < fWidth ? m_Width : fWidth;
+		const int height = m_Height < fHeight ? m_Height : fHeight;
+		for (int i = 0; i < height; i++)
+		{
+			for (int j = 0; j < width; j++)
+			{
+				//·­×ªRGBÏÔÊ¾
+				constexpr int channelCount = 3;
+				constexpr int rChannel = 2;
+				constexpr int gChannel = 1;
+				constexpr int bChannel = 0;
+
+				Vec3 color = framebuffer.GetColor(j, fHeight - 1 - i);
+				const int pixStart = (i * m_Width + j) * channelCount;
+				const int rIndex = pixStart + rChannel;
+				const int gIndex = pixStart + gChannel;
+				const int bIndex = pixStart + bChannel;
+
+				m_Buffer[rIndex] = Float2UChar(color.X);
+				m_Buffer[gIndex] = Float2UChar(color.Y);
+				m_Buffer[bIndex] = Float2UChar(color.Z);
+			}
+		}
+		Show();
 	}
 }

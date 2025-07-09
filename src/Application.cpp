@@ -2,6 +2,7 @@
 #include "Window.h"
 
 #include <string>
+#include <iostream>
 
 namespace RGS {
 	Application::Application(std::string name, const int width, const int height)
@@ -32,10 +33,20 @@ namespace RGS {
 		while (!m_Window->Closed())
 		{
 			OnUpdate();
+
+			Window::PollInputEvents();
 		}
 	}
 
 	void Application::OnUpdate()
 	{
+		if (m_Window->GetKey(RGS_KEY_0) == RGS_PRESS)
+		{
+			std::cout << "0 ±»°´ÏÂ" << std::endl;
+		}
+
+		Framebuffer framebuffer(m_Width, m_Height);
+		framebuffer.Clear({ 1.0f,0.0f,1.0f });
+		m_Window->DrawFramebuffer(framebuffer);
 	}
 }
