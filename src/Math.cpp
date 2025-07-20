@@ -3,9 +3,48 @@
 #include "Base.h"
 
 namespace RGS {
+	Vec3 operator+ (const Vec3& left, const Vec3& right)
+	{
+		return Vec3{ left.X + right.X, left.Y + right.Y, left.Z + right.Z };
+	}
+
+	Vec3 operator- (const Vec3& left, const Vec3& right)
+	{
+		return left + (-1.0f * right);
+	}
+
+	Vec3 operator* (const float left, const Vec3& right)
+	{
+		return Vec3 { left * right.X, left * right.Y, left * right.Z };
+	}
+
+	Vec3 operator* (const Vec3& left, const float right)
+	{
+		return right * left;
+	}
+
+	Vec3 operator/ (const Vec3& left, const float right)
+	{
+		return left * (1.0f / right);
+	}
+
 	float Dot(const Vec3& left, const Vec3& right)
 	{
 		return left.X * right.X + left.Y * right.Y + left.Z * right.Z;
+	}
+
+	Vec3 Cross(const Vec3& left, const Vec3& right)
+	{
+		float x = left.Y * right.Z - left.Z * right.Y;
+		float y = left.Z * right.X - left.X * right.Z;
+		float z = left.X * right.Y - left.Y * right.X;
+		return { x, y, z };
+	}
+
+	Vec3 Normalize(const Vec3& v)
+	{
+		float len = (float)sqrt(v.X * v.X + v.Y * v.Y + v.Z * v.Z);
+		return v / len;
 	}
 
 	Mat4::Mat4(const Vec4& v0, const Vec4& v1, const Vec4& v2, const Vec4& v3)
@@ -128,6 +167,29 @@ namespace RGS {
 		m.M[1][3] = -Dot(yAxis, eye);
 		m.M[2][3] = -Dot(zAxis, eye);
 
+		return m;
+	}
+
+	Mat4 Mat4LookAt(const Vec3& eye, const Vec3& target, const Vec3& up)
+	{
+		Vec3 zAxis = Normalize(eye - target);
+		Vec3 xAxis = Normalize(Cross(up, zAxis));
+		Vec3 yAxis = Normalize(Cross(zAxis, xAxis));
+		return Mat4LookAt(xAxis, yAxis, zAxis, eye);
+	}
+
+	Mat4 Mat4Perspective(float fovy, float aspect, float near, float far)
+	{
+		float z_range = far - near;
+		Mat4 m = Mat4Identity();
+		ASSERT(fovy > 0 && aspect > 0);
+		ASSERT(near > 0 && far > 0 && z_range > 0);
+		m.M[0][0] = m.M[1][1] / aspect;
+		m.M[1][1] = 1 / (float)tan(fovy / 2);
+		m.M[2][2] = -(near + far) / z_range;
+		m.M[2][3] = -2 * near * far / z_range;
+		m.M[3][2] = -1;
+		m.M[3][3] = 0;
 		return m;
 	}
 

@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(HEADERS
 	"src/Application.h"
- "src/Window.h" "src/WindowsWindow.h" "src/Base.h" "src/InputCodes.h" "src/Framebuffer.h" "src/Math.h")
+ "src/Window.h" "src/WindowsWindow.h" "src/Base.h" "src/InputCodes.h" "src/Framebuffer.h" "src/Math.h" "src/ShaderBase.h")
 
 set(SOURCES
 	"src/Main.cpp"	
