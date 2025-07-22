@@ -1,16 +1,11 @@
-#include "Math.h"
+#include "RGS/Maths.h"
 
-#include "Base.h"
+#include "RGS/Base.h"
 
 namespace RGS {
 	Vec3 operator+ (const Vec3& left, const Vec3& right)
 	{
 		return Vec3{ left.X + right.X, left.Y + right.Y, left.Z + right.Z };
-	}
-
-	Vec3 operator- (const Vec3& left, const Vec3& right)
-	{
-		return left + (-1.0f * right);
 	}
 
 	Vec3 operator* (const float left, const Vec3& right)
@@ -21,6 +16,11 @@ namespace RGS {
 	Vec3 operator* (const Vec3& left, const float right)
 	{
 		return right * left;
+	}
+
+	Vec3 operator- (const Vec3& left, const Vec3& right)
+	{
+		return left + (-1.0f * right);
 	}
 
 	Vec3 operator/ (const Vec3& left, const float right)
@@ -191,6 +191,16 @@ namespace RGS {
 		m.M[3][2] = -1;
 		m.M[3][3] = 0;
 		return m;
+	}
+
+	float Lerp(const float start, const float end, const float t)
+	{
+		return end * t + start * (1.0f - t);
+	}
+
+	Vec3 Lerp(const Vec3& start, const Vec3& end, const float t)
+	{
+		return end * t + start * (1.0f - t);
 	}
 
 	unsigned char Float2UChar(const float f)

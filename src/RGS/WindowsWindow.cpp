@@ -1,6 +1,6 @@
-#include "Base.h"
-#include "Window.h"
-#include "WindowsWindow.h"
+#include "RGS/Base.h"
+#include "RGS/Window.h"
+#include "RGS/WindowsWindow.h"
 
 #include <windows.h>
 

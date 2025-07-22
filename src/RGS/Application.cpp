@@ -1,5 +1,10 @@
 #include "Application.h"
-#include "Window.h"
+
+#include "RGS/Window.h"
+#include "RGS/Framebuffer.h"
+#include "RGS/Maths.h"
+#include "RGS/Shaders/BlinnShader.h"
+#include "RGS/Renderer.h"
 
 #include <string>
 #include <iostream>
@@ -48,5 +53,16 @@ namespace RGS {
 		Framebuffer framebuffer(m_Width, m_Height);
 		framebuffer.Clear({ 1.0f,0.0f,1.0f });
 		m_Window->DrawFramebuffer(framebuffer);
+
+		Program program(BlinnVertexShader);
+		Triangle<BlinnVertex> tri;
+		tri[0].ModelPos = { -10.0f, 10.0f, -10.0f, 1.0f };
+		tri[1].ModelPos = { -10.0f, -10.0f, -10.0f, 1.0f };
+		tri[2].ModelPos = { 1.0f, 1.0f, -1.0f, 1.0f };
+
+		BlinnUniforms uniforms;
+		uniforms.MVP = Mat4Perspective(90.0f / 180.0f * PI, 1.0f, 1.0f, 10.0f);
+
+		Renderer::Draw(framebuffer, program, tri, uniforms);
 	}
 }

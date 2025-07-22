@@ -1,7 +1,7 @@
-#include "Window.h"
+#include "RGS/Window.h"
 
-#include "Base.h"
-#include "WindowsWindow.h"
+#include "RGS/Base.h"
+#include "RGS/WindowsWindow.h"
 
 namespace RGS {
 	Window::Window(std::string title, const int width, const int height)

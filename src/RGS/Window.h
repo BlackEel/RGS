@@ -1,6 +1,6 @@
 #pragma once
-#include "InputCodes.h"
-#include "Framebuffer.h"
+#include "RGS/InputCodes.h"
+#include "RGS/Framebuffer.h"
 #include <string>
 
 namespace RGS {

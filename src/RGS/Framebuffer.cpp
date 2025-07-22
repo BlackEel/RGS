@@ -1,6 +1,6 @@
 #pragma once
-#include "Base.h"
-#include "Framebuffer.h"
+#include "RGS/Base.h"
+#include "RGS/Framebuffer.h"
 
 namespace RGS {
 	Framebuffer::Framebuffer(const int width, const int height)

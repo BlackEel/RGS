@@ -46,7 +46,7 @@
 #define RGS_KEY_Y                  89
 #define RGS_KEY_Z                  90
 #define RGS_KEY_LEFT_BRACKET       91  // [
-#define RGS_KEY_BACKSLASH          92  // \
+#define RGS_KEY_BACKSLASH          92  /* \ */
 #define RGS_KEY_RIGHT_BRACKET      93  // ]
 #define RGS_KEY_GRAVE_ACCENT       96  // `
 #define RGS_KEY_WORLD_1            161

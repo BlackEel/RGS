@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#define PI 3.14159265358979323846
 
 namespace RGS {
 	struct Vec2
@@ -102,6 +103,9 @@ namespace RGS {
 	Mat4 Mat4RotateY(float angle);
 	Mat4 Mat4RotateZ(float angle);
 	Mat4 Mat4Perspective(float fovy, float aspect, float near, float far);
+	
+	float Lerp(const float start, const float end, const float t);
+	Vec3 Lerp(const Vec3& start, const Vec3& end, const float t);
 
 	unsigned char Float2UChar(const float f);
 	float UChar2Float(const unsigned char c);
