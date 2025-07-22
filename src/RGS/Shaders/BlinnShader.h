@@ -1,7 +1,7 @@
 #pragma once
-#include "ShaderBase.h"
+#include "RGS/Shaders/ShaderBase.h"
 
-#include "Math.h"
+#include "RGS/Maths.h"
 
 namespace RGS {
 	struct BlinnVertex : public VertexBase

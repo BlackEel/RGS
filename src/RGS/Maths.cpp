@@ -28,6 +28,37 @@ namespace RGS {
 		return left * (1.0f / right);
 	}
 
+	Vec4 operator+ (const Vec4& left, const Vec4& right)
+	{
+		return Vec4{ left.X + right.X, left.Y + right.Y, left.Z + right.Z, left.W + right.W };
+	}
+
+	Vec4 operator- (const Vec4& left, const Vec4& right)
+	{
+		return Vec4{ left.X - right.X, left.Y - right.Y, left.Z - right.Z, left.W - right.W };
+	}
+
+	Vec4 operator* (const float left, const Vec4& right)
+	{
+		return Vec4{ left * right.X, left * right.Y, left * right.Z, left * right.W };
+	}
+
+	Vec4 operator* (const Vec4& left, const float right)
+	{
+		return right * left;
+	}
+
+	Vec4 operator+ (const Vec4& left, const float right)
+	{
+		return right * left;
+	}
+
+	Vec4 operator/ (const Vec4& left, const float right)
+	{
+		ASSERT(right != 0);
+		return left * (1.0f / right);
+	}
+
 	float Dot(const Vec3& left, const Vec3& right)
 	{
 		return left.X * right.X + left.Y * right.Y + left.Z * right.Z;
