@@ -20,9 +20,23 @@ namespace RGS {
 		Triangle() = default;
 	};
 
+	enum class DepthFuncType
+	{
+		LESS,
+		LEQUAL,
+		ALWAYS,
+	};
+
 	template<typename vertex_t, typename uniforms_t, typename varyings_t>
 	struct Program
 	{
+		bool EnableDepthTest = true;
+		bool EnableWriteDepth = true;
+		bool EnableBlend = true;
+		bool EnableDoubleSided = false;
+
+		DepthFuncType DepthFunc = DepthFuncType::LESS;
+
 		using vertex_shader_t = void (*)(varyings_t&, const vertex_t&, const uniforms_t&);
 		vertex_shader_t VertexShader;
 
@@ -59,6 +73,8 @@ namespace RGS {
 		static BoundingBox GetBoundingBox(const Vec4(&fragCoords)[3], const int width, const int Height);
 		static void CalculateWeights(float(&screenWeights)[3], float(&weights)[3], const Vec4(&fragCoords)[3], const Vec2& screenPoint);
 		static  bool IsInsideTriangle(float(&weights)[3]);
+		static bool IsBackFacing(const Vec4& a, const Vec4& b, const Vec4& c);
+		static bool PassDepthTest(const float writeDepth, const float fDepth, const DepthFuncType depthFunc);
 
 		template <typename varyings_t>
 		static void LerpVaryings(varyings_t& out, const varyings_t& start, const varyings_t& end, const float ratio)
@@ -228,15 +244,44 @@ namespace RGS {
 			color.Z = Clamp(color.Z, 0.0f, 1.0f);
 			color.W = Clamp(color.W, 0.0f, 1.0f);
 
-			framebuffer.SetColor(x, y, color);
+			//Blend
+			if (program.EnableBlend)
+			{
+				Vec3 dstColor = framebuffer.GetColor(x, y);
+				Vec3 srcColor = color;
+				float alpha = color.W;
+				color = { Lerp(dstColor,srcColor,alpha),1.0f };
+				framebuffer.SetColor(x, y, color);
+			}
+			else
+			{
+				framebuffer.SetColor(x, y, color);
+			}
+
+			if (program.EnableWriteDepth)
+			{
+				float depth = varyings.FragPos.Z;
+				framebuffer.SetDepth(x, y, depth);
+			}
 		}
 
 		template<typename vertex_t, typename uniforms_t, typename varyings_t>
 		static void RasterizeTriangle(Framebuffer& framebuffer,
-			const Program<vertex_t, uniforms_t, varyings_t>& program,
-			const varyings_t(&varyings)[3],
-			const uniforms_t& uniforms)
+									  const Program<vertex_t, uniforms_t, varyings_t>& program,
+									  const varyings_t(&varyings)[3],
+									  const uniforms_t& uniforms)
 		{
+			//Back Face Culling
+			if (!program.EnableDoubleSided)
+			{
+				bool isBackFacing = false;
+				isBackFacing = IsBackFacing(varyings[0].NdcPos, varyings[1].NdcPos, varyings[2].NdcPos);
+				if (isBackFacing)
+				{
+					return;
+				}
+			}
+			
 			int width = framebuffer.GetWidth();
 			int height = framebuffer.GetHeight();
 
@@ -262,6 +307,18 @@ namespace RGS {
 
 					varyings_t pixVaryings;
 					LerpVaryings(pixVaryings, varyings, weights, width, height);
+
+					//Early Depth Test
+					if (program.EnableDepthTest)
+					{
+						float depth = pixVaryings.FragPos.Z;
+						float fDepth = framebuffer.GetDepth(x, y);
+						DepthFuncType depthFunc = program.DepthFunc;
+						if (!PassDepthTest(depth, fDepth, depthFunc))
+						{
+							continue;
+						}
+					}
 
 					//Pixel Processing
 					ProcessPixel(framebuffer, x, y, program, pixVaryings, uniforms);

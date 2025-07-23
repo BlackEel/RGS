@@ -4,11 +4,15 @@
 #include <string>
 #include <memory>
 #include <chrono>
+#include <vector>
+
+#include "RGS/Renderer.h"
+#include "RGS/Shaders/BlinnShader.h"
 
 namespace RGS {
 	struct Camera
 	{
-		Vec4 Pos = { 0.0f, 0.0f, 0.0f, 1.0f };
+		Vec4 Pos = { 0.0f, 2.0f, 10.0f, 1.0f };
 		Vec4 Right = { 1.0f, 0.0f, 0.0f, 0.0f };
 		Vec4 Up = { 0.0f, 1.0f, 0.0f, 0.0f };
 		Vec4 Dir = { 0.0f, 0.0f, -1.0f, 0.0f };
@@ -30,6 +34,8 @@ namespace RGS {
 		void OnCameraUpdate(float time);
 		void OnUpdate(float time);
 
+		void LoadMesh(const char* fileName);
+
 	private:
 		std::string m_Name;
 		int m_Width, m_Height;
@@ -37,5 +43,9 @@ namespace RGS {
 
 		Window* m_Window;
 		Camera m_Camera;
+
+		std::vector< Triangle<BlinnVertex> > m_Mesh;
+
+		BlinnUniforms m_Uniforms;
 	};
 }

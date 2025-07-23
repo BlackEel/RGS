@@ -43,6 +43,11 @@ namespace RGS {
 		return right * left;
 	}
 
+	Vec3 operator*(const Vec3& left, const Vec3& right)
+	{
+		return Vec3{ left.X * right.X, left.Y * right.Y, left.Z * right.Z };
+	}
+
 	Vec3 operator- (const Vec3& left, const Vec3& right)
 	{
 		return left + (-1.0f * right);

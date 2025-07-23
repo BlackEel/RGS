@@ -35,6 +35,31 @@ namespace RGS {
 		return weights[0] >= -EPSILON && weights[1] >= -EPSILON && weights[2] >= -EPSILON;
 	}
 
+	bool Renderer::IsBackFacing(const Vec4& a, const Vec4& b, const Vec4& c)
+	{
+		// 逆时针为正面（可见）
+		// (b.X - a.X) * (c.Y - b.Y) - (b.Y - a.Y) * (c.X - b.X)
+		float signedArea = a.X * b.Y - a.Y * b.X +	//叉乘
+			b.X * c.Y - b.Y * c.X +
+			c.X * a.Y - c.Y * a.X;
+		return signedArea <= 0;
+	}
+
+	bool Renderer::PassDepthTest(const float writeDepth, const float fDepth, const DepthFuncType depthFunc)
+	{
+		switch (depthFunc)
+		{
+		case DepthFuncType::LESS:
+			return fDepth - writeDepth > EPSILON;
+		case DepthFuncType::LEQUAL:
+			return fDepth - writeDepth >= -EPSILON;
+		case DepthFuncType::ALWAYS:
+			return true;
+		default:
+			return false;
+		}
+	}
+
 	float Renderer::GetIntersectRatio(const Vec4& prev, const Vec4& curr, const Plane plane)
 	{
 		switch (plane) {
@@ -76,7 +101,7 @@ namespace RGS {
 
 		BoundingBox bBox;
 		bBox.MinX = std::floor(minX);
-		bBox.MinY = std::floor(minX);
+		bBox.MinY = std::floor(minY);
 		bBox.MaxX = std::ceil(maxX);
 		bBox.MaxY = std::ceil(maxY);
 
