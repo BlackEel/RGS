@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
-#define PI 3.14159265358979323846
+
+#define PI 3.14159265359
+#define EPSILON 1e-5f
 
 namespace RGS {
 	struct Vec2
@@ -92,6 +94,16 @@ namespace RGS {
 	float Dot(const Vec3& left, const Vec3& right);
 	Vec3 Cross(const Vec3& left, const Vec3& right);
 
+	Vec2 operator+ (const Vec2& left, const Vec2& right);
+	Vec2 operator* (const float left, const Vec2& right);
+	Vec2 operator* (const Vec2& left, const float right);
+	Vec2 operator- (const Vec2& left, const Vec2& right);
+	Vec2 operator/ (const Vec2& left, const float right);
+	Vec3 operator+ (const Vec3& left, const Vec3& right);
+	Vec3 operator* (const float left, const Vec3& right);
+	Vec3 operator* (const Vec3& left, const float right);
+	Vec3 operator- (const Vec3& left, const Vec3& right);
+	Vec3 operator/ (const Vec3& left, const float right);
 	Vec4 operator+ (const Vec4& left, const Vec4& right);
 	Vec4 operator- (const Vec4& left, const Vec4& right);
 	Vec4 operator* (const float left, const Vec4& right);
@@ -112,6 +124,7 @@ namespace RGS {
 	
 	float Lerp(const float start, const float end, const float t);
 	Vec3 Lerp(const Vec3& start, const Vec3& end, const float t);
+	float Clamp(const float val, const float min, const float max);
 
 	unsigned char Float2UChar(const float f);
 	float UChar2Float(const unsigned char c);

@@ -53,9 +53,9 @@ namespace RGS {
 		Framebuffer framebuffer(m_Width, m_Height);
 		framebuffer.Clear();
 
-		Program program(BlinnVertexShader);
+		Program program(BlinnVertexShader, BlinnFragmentShader);
 		Triangle<BlinnVertex> tri;
-		tri[0].ModelPos = { -10.0f, 10.0f, -10.0f, 1.0f };
+		tri[0].ModelPos = { 0.0f, 0.0, -8.0, 1.0f };
 		tri[1].ModelPos = { -10.0f, -10.0f, -10.0f, 1.0f };
 		tri[2].ModelPos = { 30.0f, -10.0f, -10.0f, 1.0f };
 

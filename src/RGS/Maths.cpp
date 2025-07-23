@@ -3,6 +3,31 @@
 #include "RGS/Base.h"
 
 namespace RGS {
+	Vec2 operator+ (const Vec2& left, const Vec2& right)
+	{
+		return Vec2{ left.X + right.X, left.Y + right.Y };
+	}
+
+	Vec2 operator* (const float left, const Vec2& right)
+	{
+		return Vec2{ left * right.X, left * right.Y };
+	}
+
+	Vec2 operator* (const Vec2& left, const float right)
+	{
+		return right * left;
+	}
+
+	Vec2 operator- (const Vec2& left, const Vec2& right)
+	{
+		return left + (-1.0f * right);
+	}
+
+	Vec2 operator/ (const Vec2& left, const float right)
+	{
+		return left * (1.0f / right);
+	}
+
 	Vec3 operator+ (const Vec3& left, const Vec3& right)
 	{
 		return Vec3{ left.X + right.X, left.Y + right.Y, left.Z + right.Z };
@@ -242,5 +267,21 @@ namespace RGS {
 	float UChar2Float(const unsigned char c)
 	{
 		return (float)c / 255.0f;
+	}
+
+	float Clamp(const float val, const float min, const float max)
+	{
+		if (val < min)
+		{
+			return min;
+		}
+		else if (val > max)
+		{
+			return max;
+		}
+		else
+		{
+			return val;
+		}
 	}
 }
