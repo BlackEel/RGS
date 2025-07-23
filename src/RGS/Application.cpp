@@ -37,31 +37,77 @@ namespace RGS {
 	{
 		while (!m_Window->Closed())
 		{
-			OnUpdate();
+			auto nowFrameTime = std::chrono::steady_clock::now();
+			auto duration = std::chrono::duration_cast<std::chrono::microseconds>(nowFrameTime - m_LastFrameTime);
+			float deltaTime = duration.count() * 0.001f * 0.001f;
+			m_LastFrameTime = nowFrameTime;
+
+			OnUpdate(deltaTime);
 
 			Window::PollInputEvents();
 		}
 	}
 
-	void Application::OnUpdate()
+	void Application::OnCameraUpdate(float time)
 	{
-		if (m_Window->GetKey(RGS_KEY_0) == RGS_PRESS)
+		constexpr float speed = 1.0f;
+		if (m_Window->GetKey(RGS_KEY_SPACE) == RGS_PRESS)
 		{
-			std::cout << "0 ±»°´ÏÂ" << std::endl;
+			m_Camera.Pos = m_Camera.Pos + speed * time * m_Camera.Up;
+		}
+		if (m_Window->GetKey(RGS_KEY_LEFT_SHIFT) == RGS_PRESS)
+		{
+			m_Camera.Pos = m_Camera.Pos - speed * time * m_Camera.Up;
+		}
+		if (m_Window->GetKey(RGS_KEY_D) == RGS_PRESS)
+		{
+			m_Camera.Pos = m_Camera.Pos + speed * time * m_Camera.Right;
+		}
+		if (m_Window->GetKey(RGS_KEY_A) == RGS_PRESS)
+		{
+			m_Camera.Pos = m_Camera.Pos - speed * time * m_Camera.Right;
+		}
+		if (m_Window->GetKey(RGS_KEY_W) == RGS_PRESS)
+		{
+			m_Camera.Pos = m_Camera.Pos + speed * time * m_Camera.Dir;
+		}
+		if (m_Window->GetKey(RGS_KEY_S) == RGS_PRESS)
+		{
+			m_Camera.Pos = m_Camera.Pos - speed * time * m_Camera.Dir;
 		}
 
+		//constexpr float rotateSpeed = 1.0f;
+		//Mat4 rotation = Mat4Identity();
+		//if (m_Window->GetKey(RGS_KEY_Q) == RGS_PRESS)
+		//{
+		//	rotation = Mat4RotateY(time * rotateSpeed);
+		//}
+		//if (m_Window->GetKey(RGS_KEY_E) == RGS_PRESS)
+		//{
+		//	rotation = Mat4RotateY(-time * rotateSpeed);
+		//}
+		//m_Camera.Dir = rotation * m_Camera.Dir;
+		//m_Camera.Dir = { Normalize(m_Camera.Dir), 0.0f };
+		//m_Camera.Right = rotation * m_Camera.Right;
+		//m_Camera.Right = { Normalize(m_Camera.Right), 0.0f };
+	}
+
+	void Application::OnUpdate(float time)
+	{
+		OnCameraUpdate(time);
+
 		Framebuffer framebuffer(m_Width, m_Height);
-		framebuffer.Clear();
-
 		Program program(BlinnVertexShader, BlinnFragmentShader);
-		Triangle<BlinnVertex> tri;
-		tri[0].ModelPos = { 0.0f, 0.0, -8.0, 1.0f };
-		tri[1].ModelPos = { -10.0f, -10.0f, -10.0f, 1.0f };
-		tri[2].ModelPos = { 30.0f, -10.0f, -10.0f, 1.0f };
-
 		BlinnUniforms uniforms;
-		uniforms.MVP = Mat4Perspective(90.0f / 180.0f * PI, 1.0f, 1.0f, 10.0f);
+		Triangle<BlinnVertex> tri;
 
+		Mat4 view = Mat4LookAt(m_Camera.Pos, m_Camera.Pos + m_Camera.Dir, { 0.0f, 1.0f, 0.0f });
+		Mat4 proj = Mat4Perspective(90.0f / 360.0f * 2.0f * PI, m_Camera.Aspect, 0.1f, 100.0f);
+
+		uniforms.MVP = proj * view;
+		tri[0].ModelPos = { 0.0f, 0.0, -10.0, 1.0f };
+		tri[1].ModelPos = { 0.0f, 10.0f, -10.0f, 1.0f };
+		tri[2].ModelPos = { 10.0f, 0.0f, -10.0f, 1.0f };
 		Renderer::Draw(framebuffer, program, tri, uniforms);
 		
 		m_Window->DrawFramebuffer(framebuffer);

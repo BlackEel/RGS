@@ -100,6 +100,7 @@ namespace RGS {
 	Vec3 Normalize(const Vec3& v)
 	{
 		float len = (float)sqrt(v.X * v.X + v.Y * v.Y + v.Z * v.Z);
+		ASSERT(len != 0)
 		return v / len;
 	}
 
@@ -240,8 +241,8 @@ namespace RGS {
 		Mat4 m = Mat4Identity();
 		ASSERT(fovy > 0 && aspect > 0);
 		ASSERT(near > 0 && far > 0 && z_range > 0);
-		m.M[0][0] = m.M[1][1] / aspect;
 		m.M[1][1] = 1 / (float)tan(fovy / 2);
+		m.M[0][0] = m.M[1][1] / aspect;
 		m.M[2][2] = -(near + far) / z_range;
 		m.M[2][3] = -2 * near * far / z_range;
 		m.M[3][2] = -1;
